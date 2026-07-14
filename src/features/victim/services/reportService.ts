@@ -321,6 +321,25 @@ export const reportService = {
     }))
   },
 
+  createSeguimiento: async (input: {
+    denunciaid: string
+    profesionalid?: string
+    tipo: string
+    notas: string
+    estadoanterior?: string
+    estadonuevo?: string
+  }): Promise<BackendSeguimiento> => {
+    if (config.USE_MOCK) {
+      await delay()
+      return { id: `seg-${Date.now()}`, ...input }
+    }
+    const { data } = await apiClient.post<BackendSeguimiento>(
+      `/seguimientos/guardar`,
+      input
+    )
+    return data
+  },
+
   getCaseTimeline: async (reportId: string): Promise<import('@/components/Timeline').TimelineEvent[]> => {
     if (config.USE_MOCK) {
       await delay()

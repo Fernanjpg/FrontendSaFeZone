@@ -30,6 +30,7 @@ import { LegalUpdatePage }                 from '@/features/defender/pages/Legal
 
 import { AdminDashboard } from '@/features/admin/pages/AdminDashboard'
 import { TriageView }     from '@/features/admin/pages/TriageView'
+import { UsersManagementPage } from '@/features/admin/pages/UsersManagementPage'
 
 
 import { NotificationCenter } from '@/features/shared-features/notifications/pages'
@@ -86,7 +87,7 @@ const AppRoutes = () => (
     <Route path="/dashboard/admin" element={<Protected element={<AdminDashboard />} role="ADMIN" />} />
     <Route path="/dashboard/admin/agenda" element={<Protected element={<AgendaPage />} role="ADMIN" />} />
     <Route path="/admin/triage"    element={<Protected element={<TriageView />}     role="ADMIN" />} />
-    <Route path="/admin/users"     element={<Protected element={<AdminDashboard />} role="ADMIN" />} />
+    <Route path="/admin/users"     element={<Protected element={<UsersManagementPage />} role="ADMIN" />} />
 
     
     <Route path="/notifications"        element={<Protected element={<NotificationCenter />} role={['VICTIM','PSYCHOLOGIST','DEFENDER','ADMIN']} />} />

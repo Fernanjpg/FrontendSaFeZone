@@ -117,7 +117,7 @@ export const Sidebar = ({ isOpen = true }: SidebarProps) => {
         <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-sm min-w-[16rem]">
           <div className="text-xs text-white/80 space-y-1">
             <p className="font-semibold">SafeZone</p>
-            <p className="text-white/60">Comprehensive Protection</p>
+            <p className="text-white/60">Protección Integral</p>
           </div>
         </div>
       )}

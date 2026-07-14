@@ -36,7 +36,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       )}
 
       {messages.length === 0 && !isLoading && (
-        <div className="flex items-center justify-center h-32 text-on-surface-variant">
+        <div className="flex items-center justify-center h-32 text-gray-500">
           <p>No messages yet. Start the conversation!</p>
         </div>
       )}
@@ -59,7 +59,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             </div>
 
             <div className={`flex-1 space-y-1 ${isOwn ? 'items-end' : ''} flex flex-col`}>
-              <div className="text-xs text-on-surface-variant">
+              <div className="text-xs text-gray-500">
                 <span className="font-semibold">{message.senderName}</span>
                 <span className="mx-1">•</span>
                 <span>
@@ -73,8 +73,8 @@ export const MessageList: React.FC<MessageListProps> = ({
               <div
                 className={`max-w-xs rounded-lg px-4 py-2 ${
                   isOwn
-                    ? 'bg-primary text-on-primary'
-                    : 'bg-surface-container text-on-surface'
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-900'
                 }`}
               >
                 <p className="text-sm">{message.content}</p>

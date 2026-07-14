@@ -25,10 +25,10 @@ export const VictimDashboard = () => {
 
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { bg: string; text: string; label: string }> = {
-      PENDING: { bg: 'bg-warning-light', text: 'text-yellow-700', label: 'Pending' },
-      UNDER_EVALUATION: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Under Evaluation' },
-      IN_FOLLOW_UP: { bg: 'bg-green-50', text: 'text-green-700', label: 'In Follow-up' },
-      RESOLVED: { bg: 'bg-green-50', text: 'text-green-700', label: 'Resolved' },
+      PENDING: { bg: 'bg-warning-light', text: 'text-yellow-700', label: 'Pendiente' },
+      UNDER_EVALUATION: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'En Evaluación' },
+      IN_FOLLOW_UP: { bg: 'bg-green-50', text: 'text-green-700', label: 'En Seguimiento' },
+      RESOLVED: { bg: 'bg-green-50', text: 'text-green-700', label: 'Resuelto' },
     }
     return badges[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status }
   }
@@ -46,14 +46,14 @@ export const VictimDashboard = () => {
             className="bg-white hover:bg-gray-100 text-teal px-6 py-2 rounded-lg font-medium text-sm flex items-center gap-2"
           >
             <FileText className="w-4 h-4" />
-            Ver mis informes
+            Ver mis Denuncias
           </button>
           <button
             onClick={() => navigate('/victim/create-report')}
             className="bg-white/20 hover:bg-white/30 text-white px-6 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-white/40"
           >
             <AlertCircle className="w-4 h-4" />
-            Nuevo informe
+            Nueva Denuncia
           </button>
         </div>
       </div>
@@ -93,14 +93,14 @@ export const VictimDashboard = () => {
           className="bg-teal hover:bg-teal/90 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2"
         >
           <FileText className="w-4 h-4" />
-          Crear nuevo informe
+          Crear nueva Denuncia
         </button>
         <button
           onClick={() => navigate('/victim/my-reports')}
           className="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2"
         >
           <Eye className="w-4 h-4" />
-          Ver todos mis Reportes
+          Ver todas mis Denuncias
         </button>
       </div>
 
@@ -111,7 +111,7 @@ export const VictimDashboard = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">ID</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">Titulo</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Fecha</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Tipo</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-700">Prioridad</th>
@@ -123,7 +123,7 @@ export const VictimDashboard = () => {
                 const badge = getStatusBadge(report.status)
                 return (
                   <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50">
-                     <td className="py-3 px-4 font-medium text-gray-900">{report.id}</td>
+                     <td className="py-3 px-4 font-medium text-gray-900">{report.title}</td>
                      <td className="py-3 px-4 text-gray-600">
                        {new Date(report.createdAt || '').toLocaleDateString('en-US')}
                      </td>
@@ -151,7 +151,7 @@ export const VictimDashboard = () => {
           </table>
           {reports.length === 0 && (
             <div className="text-center py-8 text-gray-600">
-              <p className="text-sm">Reportes no registrados aún</p>
+              <p className="text-sm">Denuncias no registradas aún</p>
             </div>
           )}
         </div>

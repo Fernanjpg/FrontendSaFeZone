@@ -39,17 +39,9 @@ export const CaseLogPage = () => {
         }
 
         setReport(reportData)
-        
-        
-        setLogEntries([
-          {
-            id: 'init-1',
-            title: 'Case assigned and reviewed',
-            description: 'The case has been opened and assigned to the multidisciplinary team.',
-            date: reportData?.createdAt || new Date(),
-            status: 'completed'
-          }
-        ])
+
+        const timeline = await reportService.getCaseTimeline(caseId)
+        setLogEntries(timeline)
 
       } catch (err: any) {
         setError(err.message || 'Error loading case')
@@ -61,16 +53,23 @@ export const CaseLogPage = () => {
   }, [caseId, user?.id, user?.role])
 
   const handleAddLog = async (description: string, type: string) => {
-    
-    
-    const newEntry = {
-      id: Date.now().toString(),
-      title: `Note: ${type === 'NOTE' ? 'General' : type === 'EVALUATION' ? 'Evaluation' : type === 'LEGAL_ACTION' ? 'Legal Action' : 'Meeting'}`,
-      description: `${description} (Added by ${user?.name})`,
-      date: new Date(),
-      status: 'current'
+    if (!caseId) return
+
+    try {
+      await reportService.createSeguimiento({
+        denunciaid: caseId,
+        profesionalid: user?.id,
+        tipo: type,
+        notas: description,
+        estadoanterior: report?.status,
+        estadonuevo: report?.status,
+      })
+
+      const timeline = await reportService.getCaseTimeline(caseId)
+      setLogEntries(timeline)
+    } catch (err: any) {
+      setError(err.message || 'Error al guardar la nota')
     }
-    setLogEntries(prev => [newEntry, ...prev])
   }
 
   if (isLoading) {

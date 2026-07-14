@@ -278,7 +278,7 @@ const formatAgendaDate = (value?: string | null) => {
               <CalendarDays className="h-4 w-4" />
               Agenda / Calendario
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Gestiona tus citas y trámites</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Gestiona tus citas</h1>
             <p className="mt-2 text-sm text-gray-600">Visualiza, organiza y programa tus compromisos sin dependencias pesadas.</p>
           </div>
 
@@ -380,11 +380,7 @@ const formatAgendaDate = (value?: string | null) => {
                         Gestionar cita
                       </Button>
                     )}
-                    {user.role === 'VICTIM' && (
-                      <Button variant="secondary" onClick={() => setSelectedEvent(event)}>
-                        Ver detalle
-                      </Button>
-                    )}
+          
                   </div>
                 </div>
               )

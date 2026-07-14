@@ -89,17 +89,15 @@ export const ChatView: React.FC = () => {
     if (!selectedConversationId) return;
 
     try {
-      setIsEncrypting(true);
       setError(null);
-      
-      await new Promise(resolve => setTimeout(resolve, 600));
-      setIsEncrypting(false);
-
+      setIsEncrypting(true);
       setIsSending(true);
+
       const message = await chatService.sendMessage({
         conversationId: selectedConversationId,
         content,
       });
+      setIsEncrypting(false);
       setMessages((prev) => [...prev, message]);
 
       
@@ -118,6 +116,7 @@ export const ChatView: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Error sending message');
     } finally {
       setIsSending(false);
+      setIsEncrypting(false);
     }
   };
 
@@ -142,7 +141,7 @@ export const ChatView: React.FC = () => {
 
       
       {error && (
-        <div className="flex items-center gap-3 rounded-lg bg-error/10 p-4 text-error">
+        <div className="flex items-center gap-3 rounded-lg bg-danger/10 p-4 text-danger">
           <AlertTriangle className="h-5 w-5 flex-shrink-0" />
           <p>{error}</p>
         </div>
@@ -168,8 +167,11 @@ export const ChatView: React.FC = () => {
               
               <div className="mb-4 pb-4 border-b border-gray-100">
                 <h2 className="font-semibold text-gray-900">
-                  Case: {selectedConversation.caseId}
+                  {selectedConversation.caseTitle}
                 </h2>
+                <p className="mt-1 text-xs text-gray-400">
+                  #{selectedConversation.caseId.slice(0, 8)}
+                </p>
                 <p className="mt-1 text-sm text-gray-500">
                   {selectedConversation.participants.length} participant(s)
                 </p>

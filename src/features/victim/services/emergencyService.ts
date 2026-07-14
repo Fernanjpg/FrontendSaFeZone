@@ -1,6 +1,6 @@
 import { config } from '@/core/config'
 import apiClient from '@/core/api/apiClient'
-import { EmergencyAlert, GeoLocation } from '@/shared/types'
+import { EmergencyAlert, EmergencyStatus, GeoLocation } from '@/shared/types'
 
 
 
@@ -19,6 +19,36 @@ const saveMockAlerts = (alerts: EmergencyAlert[]) => {
 }
 
 const delay = (ms = config.MOCK_DELAY) => new Promise(r => setTimeout(r, ms))
+
+const mapEstadoToStatus = (estado: string): EmergencyStatus => {
+  const map: Record<string, EmergencyStatus> = {
+    ACTIVA: 'ACTIVE',
+    ATENDIDA: 'ATTENDED',
+    RESUELTA: 'RESOLVED',
+  }
+  return map[estado] ?? 'ACTIVE'
+}
+
+const mapBackendAlertToEmergencyAlert = (raw: any): EmergencyAlert => ({
+  id: raw.id,
+  victimId: raw.victimaId,
+  victimName: raw.victimaNombre,
+  victimEmail: raw.victimaEmail,
+  location: (raw.latitud != null && raw.longitud != null) ? {
+    latitude: raw.latitud,
+    longitude: raw.longitud,
+    accuracy: raw.precision ?? undefined,
+    timestamp: raw.creadoEn ?? new Date().toISOString(),
+  } : undefined,
+  manualAddress: raw.direccionManual ?? undefined,
+  message: raw.mensaje ?? undefined,
+  status: mapEstadoToStatus(raw.estado),
+  createdAt: raw.creadoEn,
+  attendedBy: raw.atendidoPorId ?? undefined,
+  attendedByName: raw.atendidoPorNombre ?? undefined,
+  attendedAt: raw.atendidoEn ?? undefined,
+  resolvedAt: raw.resueltoEn ?? undefined,
+})
 
 export const emergencyService = {
   
@@ -55,7 +85,7 @@ export const emergencyService = {
       mensaje: params.message,
     }
     const { data } = await apiClient.post<EmergencyAlert>('/emergency/alerts', backendPayload)
-    return data
+    return mapBackendAlertToEmergencyAlert(data)
   },
 
   
@@ -67,7 +97,7 @@ export const emergencyService = {
     const { data } = await apiClient.get<EmergencyAlert[]>('/emergency/alerts', {
       params: { status: 'ACTIVE' },
     })
-    return data
+    return (data as any[]).map(mapBackendAlertToEmergencyAlert)
   },
 
   getAllAlerts: async (): Promise<EmergencyAlert[]> => {
@@ -76,7 +106,7 @@ export const emergencyService = {
       return getMockAlerts()
     }
     const { data } = await apiClient.get<EmergencyAlert[]>('/emergency/alerts')
-    return data
+    return (data as any[]).map(mapBackendAlertToEmergencyAlert)
   },
 
   
@@ -97,7 +127,7 @@ export const emergencyService = {
       professionalId,
       professionalName,
     })
-    return data
+    return mapBackendAlertToEmergencyAlert(data)
   },
 
   resolveAlert: async (alertId: string): Promise<EmergencyAlert> => {
@@ -112,7 +142,7 @@ export const emergencyService = {
       return alert
     }
     const { data } = await apiClient.patch<EmergencyAlert>(`/emergency/alerts/${alertId}/resolve`)
-    return data
+    return mapBackendAlertToEmergencyAlert(data)
   },
 }
 

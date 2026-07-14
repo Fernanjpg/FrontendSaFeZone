@@ -17,10 +17,11 @@ const typeStyles: Record<AgendaEventType, string> = {
   PLAZO_LEGAL: 'bg-amber-500/90 text-white',
 }
 
-const statusStyles: Record<string, string> = {
+const statusStyles: Record<AgendaEventStatus, string> = {
   PENDIENTE: 'opacity-100',
-  EN_PROCESO: 'opacity-90',
-  COMPLETADO: 'opacity-60 line-through',
+  ACEPTADA: 'opacity-90',
+  RECHAZADA: 'opacity-70 grayscale',
+  COMPLETADA: 'opacity-60 line-through',
   CANCELADO: 'opacity-70 grayscale',
 }
 

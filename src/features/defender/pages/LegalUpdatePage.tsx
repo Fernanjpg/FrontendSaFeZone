@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { ChevronLeft, Save, AlertCircle } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export const LegalUpdatePage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const reportId = (location.state as any)?.reportId as string | undefined
+  const userStr = sessionStorage.getItem('user')
+  const currentUserId = userStr ? JSON.parse(userStr)?.id : ''
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -47,8 +51,8 @@ export const LegalUpdatePage = () => {
       
       const newUpdate = {
         id: `legal_${Date.now()}`,
-        reportId: 'REP-2026-00123',
-        defenderId: 'defender_1',
+        reportId: reportId ?? '',
+        defenderId: currentUserId,
         date: `${formData.date}T${formData.time}`,
         status: formData.updateType,
         updateType: formData.updateType,

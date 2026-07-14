@@ -6,8 +6,8 @@ interface AssignmentModalProps {
   isOpen: boolean;
   caseId: string;
   currentPriority: CasePriority;
-  psychologists: Array<{ id: string; nombre: string; apellido: string }>;
-  defenders: Array<{ id: string; nombre: string; apellido: string }>;
+  psychologists: Array<{ id: string; name: string; lastName: string }>;
+  defenders: Array<{ id: string; name: string; lastName: string }>;
   onAssign: (assignment: TriageAssignment) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
@@ -116,7 +116,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
             </option>
             {(psychologists || []).map((p) => (
               <option key={p.id} value={p.id} className="bg-[#374151] text-white">
-                {p.nombre} {p.apellido} ({(p as any ).caseCount ?? 0} casos)
+                {p.name} {p.lastName}
               </option>
             ))}
           </select>
@@ -138,7 +138,7 @@ export const AssignmentModal: React.FC<AssignmentModalProps> = ({
             </option>
             {(defenders || []).map((d) => (
               <option key={d.id} value={d.id} className="bg-[#374151] text-white">
-                {d.nombre} {d.apellido} ({(d as any).caseCount ?? 0} casos)
+                {d.name} {d.lastName}
               </option>
             ))}
           </select>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageCircle,
+  MessageSquare,
   X,
   Send,
   Lock,
@@ -160,7 +161,7 @@ export const ChatButton: React.FC = () => {
                     SafeZone Chat
                   </p>
                   <p className="text-teal-100 text-xs mt-0.5 flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> End-to-end encrypted
+                    <Lock className="w-3 h-3" /> Cifrado de extremo a extremo
                   </p>
                 </div>
               </div>
@@ -197,10 +198,10 @@ export const ChatButton: React.FC = () => {
                   }}
                   className="text-xs text-teal-600 hover:underline flex items-center gap-1"
                 >
-                  ← Conversations
+                  Conversaciones
                 </button>
                 <span className="text-xs font-medium text-gray-700">
-                  Case: {selectedConv.caseId}
+                  {selectedConv.caseTitle}
                 </span>
               </div>
             )}
@@ -217,7 +218,7 @@ export const ChatButton: React.FC = () => {
                   ) : conversations.filter((c) => !c.isArchived).length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <MessageCircle className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm">No conversations yet</p>
+                      <p className="text-sm">No tienes conversaciones aún</p>
                     </div>
                   ) : (
                     <ul className="space-y-2">
@@ -232,7 +233,7 @@ export const ChatButton: React.FC = () => {
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-semibold text-gray-800">
-                                    Case: {conv.caseId}
+                                    {conv.caseTitle}
                                   </p>
                                   {/* Participants chips */}
                                   <div className="flex flex-wrap gap-1 mt-1">
@@ -274,7 +275,7 @@ export const ChatButton: React.FC = () => {
                     onClick={handleOpenFull}
                     className="mt-3 w-full text-center text-xs text-teal-600 hover:underline py-2"
                   >
-                    Open full chat view →
+                    Abrir vista completa de chat →
                   </button>
                 </div>
               )}
@@ -286,7 +287,7 @@ export const ChatButton: React.FC = () => {
                   <div className="flex-1 overflow-y-auto p-3 space-y-3">
                     {messages.length === 0 && (
                       <div className="text-center text-gray-400 py-6 text-xs">
-                        No messages yet. Start the conversation!
+                        No hay mensajes aún. ¡Inicia la conversación!
                       </div>
                     )}
                     {messages.map((msg) => {
@@ -336,7 +337,7 @@ export const ChatButton: React.FC = () => {
                     {isEncrypting && (
                       <div className="flex items-center gap-1.5 mb-2 text-xs text-teal-600">
                         <Lock className="w-3 h-3 animate-pulse" />
-                        Encrypting message…
+                        Incriptando Mensaje...
                       </div>
                     )}
                     <div className="flex gap-2 items-end">
@@ -370,13 +371,13 @@ export const ChatButton: React.FC = () => {
         {/* FAB button */}
         <button
           onClick={() => setIsOpen((v) => !v)}
-          className="relative w-14 h-14 rounded-full bg-teal-600 hover:bg-teal-700 shadow-lg hover:shadow-xl text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+          className="relative w-14 h-14 rounded-full bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl text-white flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
           aria-label="Open chat"
         >
           {isOpen ? (
             <X className="w-6 h-6" />
           ) : (
-            <MessageCircle className="w-6 h-6" />
+            <MessageSquare className="w-6 h-6" />
           )}
           {/* Unread badge */}
           {!isOpen && unreadTotal > 0 && (

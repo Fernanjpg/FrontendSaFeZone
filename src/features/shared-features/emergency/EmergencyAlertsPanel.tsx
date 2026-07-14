@@ -68,7 +68,7 @@ export const EmergencyAlertsPanel = () => {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
           <h3 className="font-bold text-red-700 text-sm uppercase tracking-wide">
-            Active Emergency Alerts ({alerts.length})
+            Alertas de Emergencias Activas ({alerts.length})
           </h3>
         </div>
         <button onClick={load} className="text-gray-400 hover:text-gray-600 transition-colors" title="Refresh">
@@ -123,7 +123,7 @@ const AlertCard = ({ alert, onAttend, attending }: AlertCardProps) => {
         <div className="flex items-start gap-2 mb-2 p-2.5 bg-green-50 rounded-lg">
           <Navigation className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-green-700 text-xs font-semibold">GPS Location</p>
+            <p className="text-green-700 text-xs font-semibold">Locacion de GPS</p>
             <p className="text-green-600 text-xs font-mono mt-0.5">
               {alert.location!.latitude.toFixed(6)}, {alert.location!.longitude.toFixed(6)}
             </p>
@@ -150,7 +150,7 @@ const AlertCard = ({ alert, onAttend, attending }: AlertCardProps) => {
         <div className="flex items-start gap-2 mb-2 p-2.5 bg-blue-50 rounded-lg">
           <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-blue-700 text-xs font-semibold">Indicated Address</p>
+            <p className="text-blue-700 text-xs font-semibold">Dirección Indicada</p>
             <p className="text-blue-600 text-xs mt-0.5">{alert.manualAddress}</p>
           </div>
         </div>
@@ -158,7 +158,7 @@ const AlertCard = ({ alert, onAttend, attending }: AlertCardProps) => {
 
       {alert.message && (
         <div className="mb-3 p-2.5 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 text-xs font-semibold mb-0.5">Victim Message</p>
+          <p className="text-gray-500 text-xs font-semibold mb-0.5">Mensaje de la Víctima</p>
           <p className="text-gray-700 text-sm italic">"{alert.message}"</p>
         </div>
       )}
@@ -166,7 +166,7 @@ const AlertCard = ({ alert, onAttend, attending }: AlertCardProps) => {
       {!hasGps && !alert.manualAddress && (
         <div className="flex items-center gap-2 mb-3 p-2.5 bg-yellow-50 rounded-lg">
           <MapPin className="w-4 h-4 text-yellow-600" />
-          <p className="text-yellow-700 text-xs">Location not available</p>
+          <p className="text-yellow-700 text-xs">Ubicación no disponible</p>
         </div>
       )}
 
@@ -176,9 +176,9 @@ const AlertCard = ({ alert, onAttend, attending }: AlertCardProps) => {
         className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white rounded-lg font-semibold text-sm transition-colors"
       >
         {attending ? (
-          <><RefreshCw className="w-4 h-4 animate-spin" /> Attending...</>
+          <><RefreshCw className="w-4 h-4 animate-spin" /> Atendiendo...</>
         ) : (
-          <><CheckCircle2 className="w-4 h-4" /> Mark as Attended</>
+          <><CheckCircle2 className="w-4 h-4" /> Marcar como Atendido</>
         )}
       </button>
     </div>

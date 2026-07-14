@@ -22,6 +22,7 @@ export interface ChatAttachment {
 export interface Conversation {
   id: string;
   caseId: string;
+  caseTitle: string;
   participants: ChatParticipant[];
   lastMessage?: ChatMessage;
   lastMessageAt?: Date;

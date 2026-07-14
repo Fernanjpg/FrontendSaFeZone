@@ -3,6 +3,15 @@ import { config } from '@/core/config'
 import { TriageCase, TriageAssignment, TriageMetrics, AdminUser } from '@/shared/types'
 
 
+const getCurrentAdminId = (): string => {
+  try {
+    const u = sessionStorage.getItem('user') || localStorage.getItem('user');
+    return u ? JSON.parse(u).id : '';
+  } catch {
+    return '';
+  }
+};
+
 const MOCK_CASES: TriageCase[] = [
   {
     id: 'CASE-001', reportId: 'RPT-2026-001',
@@ -138,14 +147,15 @@ export const triageService = {
     return data
   },
 
-  // Asignar psicólogo y defensor a un caso — Spring: POST /api/admin/cases/{id}/assign
- assignCase: async (assignment: any): Promise<TriageCase> => {
-    // Definimos el payload estandarizado para ambos mundos (Mock y Real)
+  // Asignar psicólogo y defensor a un caso — Spring: PATCH /api/denuncias/{id}/asignar
+  assignCase: async (assignment: any): Promise<TriageCase> => {
+    // Mapeo de los nombres del frontend (psychologistId/priority/assignedBy)
+    // a los nombres que espera el DTO del backend (psicologoId/prioridad/asignadoPorId).
     const payload = {
-      psicologoId: assignment.psicologoId,
-      defensorLegalId: assignment.defensorLegalId,
-      asignadoPorId: assignment.asignadoPorId || 'current-user-id',
-      prioridad: assignment.prioridad,
+      psicologoId: assignment.psychologistId,
+      defensorLegalId: assignment.defenderLegalId,
+      asignadoPorId: assignment.assignedBy || getCurrentAdminId(),
+      prioridad: assignment.priority ? assignment.priority.toUpperCase() : assignment.priority,
     };
 
     if (config.USE_MOCK) {
@@ -268,6 +278,36 @@ export const adminProfessionalService = {
 }
 
 
+type BackendUsuario = {
+  id: string
+  nombre?: string
+  apellido?: string
+  email: string
+  telefono?: string
+  roles?: string
+  estado?: string
+  region?: { id?: string; nombre?: string }
+}
+
+const mapBackendUserToAdminUser = (u: BackendUsuario): AdminUser => ({
+  id: u.id,
+  email: u.email,
+  name: [u.nombre, u.apellido].filter(Boolean).join(' ').trim() || u.email,
+  role: ((u.roles || 'ADMIN').toLowerCase() as AdminUser['role']),
+  region: u.region?.nombre,
+  active: (u.estado || 'ACTIVO').toUpperCase() === 'ACTIVO',
+})
+
+const toRegisterRequest = (adminData: Partial<AdminUser> & { password?: string; telefono?: string }): Record<string, unknown> => ({
+  nombre: (adminData.name || '').split(' ')[0] || 'Admin',
+  apellido: (adminData.name || '').split(' ').slice(1).join(' ') || 'SafeZone',
+  email: adminData.email || '',
+  password: adminData.password || 'SafeZone123!',
+  telefono: adminData.telefono || '0000000000',
+  roles: (adminData.role || 'admin').toUpperCase(),
+  region: { id: adminData.region || '15' },
+})
+
 export const adminUserService = {
   getAdmins: async (): Promise<AdminUser[]> => {
     if (config.USE_MOCK) {
@@ -278,26 +318,34 @@ export const adminUserService = {
         { id: 'gestor-001', email: 'gestor.sj@safezone.cr', name: 'Laura Gestora', role: 'gestor', region: 'San José', active: true },
       ]
     }
-    const { data } = await apiClient.get<AdminUser[]>('/admin/users')
-    return data
+    const { data } = await apiClient.get<BackendUsuario[]>('/usuarios/admins')
+    return data.map(mapBackendUserToAdminUser)
   },
 
-  createAdmin: async (adminData: Partial<AdminUser>): Promise<AdminUser> => {
+  createAdmin: async (adminData: Partial<AdminUser> & { password?: string; telefono?: string }): Promise<AdminUser> => {
     if (config.USE_MOCK) {
       await delay()
       return { id: `admin-${Date.now()}`, email: adminData.email ?? '', name: adminData.name ?? '', role: 'admin', region: adminData.region ?? 'Nacional', active: true }
     }
-    const { data } = await apiClient.post<AdminUser>('/admin/users', adminData)
-    return data
+    const { data } = await apiClient.post<BackendUsuario>('/usuarios/registrar', toRegisterRequest(adminData))
+    return mapBackendUserToAdminUser(data)
   },
 
-  updateAdmin: async (adminId: string, adminData: Partial<AdminUser>): Promise<AdminUser> => {
+  updateAdmin: async (adminId: string, adminData: Partial<AdminUser> & { password?: string; telefono?: string }): Promise<AdminUser> => {
     if (config.USE_MOCK) {
       await delay()
       return { id: adminId, email: adminData.email ?? '', name: adminData.name ?? '', role: adminData.role ?? 'admin', region: adminData.region ?? 'Nacional', active: adminData.active ?? true }
     }
-    const { data } = await apiClient.put<AdminUser>(`/admin/users/${adminId}`, adminData)
-    return data
+    const payload: Record<string, unknown> = {
+      nombre: adminData.name?.split(' ')[0],
+      apellido: adminData.name?.split(' ').slice(1).join(' '),
+      telefono: adminData.telefono,
+      roles: adminData.role?.toUpperCase(),
+      region: adminData.region ? { id: adminData.region } : undefined,
+    }
+    if (adminData.password) payload.password = adminData.password
+    const { data } = await apiClient.put<BackendUsuario>(`/usuarios/${adminId}`, payload)
+    return mapBackendUserToAdminUser(data)
   },
 
   deactivateAdmin: async (adminId: string): Promise<AdminUser> => {
@@ -305,7 +353,7 @@ export const adminUserService = {
       await delay()
       return { id: adminId, email: '', name: 'Desactivado', role: 'admin', region: 'Nacional', active: false }
     }
-    const { data } = await apiClient.patch<AdminUser>(`/admin/users/${adminId}/deactivate`)
-    return data
+    const { data } = await apiClient.patch<BackendUsuario>(`/usuarios/${adminId}/desactivar`)
+    return mapBackendUserToAdminUser(data)
   },
 }

@@ -10,6 +10,8 @@
  */
 
 import apiClient from '@/core/api/apiClient';
+import { encryptData, decryptData } from '@/shared/utils/crypto';
+import { config } from '@/core/config';
 import type {
   ChatMessage,
   Conversation,
@@ -68,17 +70,33 @@ function getCurrentUserId(): string | null {
   }
 }
 
-function backendMensajeToMessage(m: BackendMensaje): ChatMessage {
+// Cifrado real (AES-GCM vía WebCrypto, ver crypto.ts). Solo en modo real;
+// en modo mock los mensajes viajan en texto plano y no se cifran.
+async function safeEncrypt(plain: string): Promise<string> {
+  if (config.USE_MOCK) return plain;
+  return await encryptData(plain);
+}
+
+async function safeDecrypt(cipher: string): Promise<string> {
+  if (config.USE_MOCK) return cipher;
+  const decrypted = await decryptData(cipher);
+  // decryptData devuelve un marcador de error si el contenido no es ciphertext válido
+  // (p. ej. mensajes antiguos en texto plano): en ese caso mostramos el original.
+  if (decrypted.startsWith('🔒')) return cipher;
+  return decrypted;
+}
+
+async function backendMensajeToMessage(m: BackendMensaje): Promise<ChatMessage> {
   return {
     id: m.id,
     conversationId: m.denunciaid,
     senderId: m.remitenteid,
     senderName: m.remitenteNombre,
     senderRole: mapRol(m.remitenteRol),
-    content: m.contenido,
+    content: await safeDecrypt(m.contenido),
     createdAt: new Date(m.fechaenvio),
     isRead: m.leido,
-  };
+  }
 }
 
 function denunciaToConversation(
@@ -118,6 +136,7 @@ function denunciaToConversation(
   return {
     id: d.id,
     caseId: d.id,
+    caseTitle: d.titulo || 'Sin título',
     participants,
     lastMessage,
     lastMessageAt: lastMessage?.createdAt,
@@ -145,7 +164,7 @@ export const chatService = {
           const { data: mensajes } = await apiClient.get<BackendMensaje[]>(
             `/mensajes/${d.id}`
           );
-          const messages = mensajes.map(backendMensajeToMessage);
+          const messages = await Promise.all(mensajes.map(backendMensajeToMessage));
           const lastMessage = messages.length > 0 ? messages[messages.length - 1] : undefined;
           const conv = denunciaToConversation(d, lastMessage);
 
@@ -173,7 +192,7 @@ export const chatService = {
       `/mensajes/${conversationId}`
     );
 
-    const messages = mensajes.map(backendMensajeToMessage);
+    const messages = await Promise.all(mensajes.map(backendMensajeToMessage));
     const lastMessage = messages.length > 0 ? messages[messages.length - 1] : undefined;
 
     // Intentamos obtener los datos de la denuncia para construir la conversación
@@ -186,6 +205,7 @@ export const chatService = {
         : {
             id: conversationId,
             caseId: conversationId,
+            caseTitle: 'Sin título',
             participants: [],
             lastMessage,
             lastMessageAt: lastMessage?.createdAt,
@@ -197,6 +217,7 @@ export const chatService = {
       conversation = {
         id: conversationId,
         caseId: conversationId,
+        caseTitle: 'Sin título',
         participants: [],
         lastMessage,
         lastMessageAt: lastMessage?.createdAt,
@@ -215,7 +236,7 @@ export const chatService = {
    */
   async sendMessage(data: CreateMessageDto): Promise<ChatMessage> {
     const payload: Record<string, string> = {
-      contenido: data.content,
+      contenido: await safeEncrypt(data.content),
     };
 
     // Solo incluir destinatarioid si viene explícito
@@ -264,7 +285,7 @@ export const chatService = {
         const { data } = await apiClient.get<BackendMensaje[]>(
           `/mensajes/${conversationId}`
         );
-        const messages = data.map(backendMensajeToMessage);
+        const messages = await Promise.all(data.map(backendMensajeToMessage));
         const newest = messages.length > 0 ? messages[messages.length - 1] : undefined;
 
         if (newest && newest.id !== lastMessageId) {

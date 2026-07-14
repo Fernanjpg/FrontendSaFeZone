@@ -186,6 +186,9 @@ export const CasesPage = () => {
                   <Eye className="w-4 h-4" />
                   Ver Detalles
                 </button>
+                <button onClick={() => navigate('/psychologist/session-form', { state: { reportId: report.id } })} className="bg-teal hover:bg-teal/90 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  Registro de Sesión
+                </button>
               </div>
             </div>
           ))

@@ -23,7 +23,7 @@ export const MyReportsPage = () => {
         const myReports = await reportService.getVictimReports(userData.id)
         setReports(myReports)
       } catch (error) {
-        console.error('Error loading reports:', error)
+        console.error('Error al cargar Denuncias:', error)
       } finally {
         setIsLoading(false)
       }
@@ -68,10 +68,10 @@ export const MyReportsPage = () => {
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      PENDING: 'Pending',
-      UNDER_EVALUATION: 'Under Evaluation',
-      IN_FOLLOW_UP: 'In Follow-up',
-      RESOLVED: 'Resolved',
+      PENDING: 'Pendiente',
+      UNDER_EVALUATION: 'En Evaluación',
+      IN_FOLLOW_UP: 'En Seguimiento',
+      RESOLVED: 'Resuelto',
     }
     return labels[status] || status
   }
@@ -79,24 +79,24 @@ export const MyReportsPage = () => {
   const tableColumns = [
     {
       key: 'title' as const,
-      label: 'Title',
+      label: 'Título',
       width: '35%',
     },
     {
       key: 'type' as const,
-      label: 'Type',
+      label: 'Tipo',
       render: (value: string) => {
         const labels: Record<string, string> = {
-          PHYSICAL_VIOLENCE: 'Physical Violence',
-          PSYCHOLOGICAL_ABUSE: 'Psychological Abuse',
-          OTHER: 'Other',
+          PHYSICAL_VIOLENCE: 'Violencia Física',
+          PSYCHOLOGICAL_ABUSE: 'Abuso Psicológico',
+          OTHER: 'Otro',
         }
         return labels[value] || value
       },
     },
     {
       key: 'status' as const,
-      label: 'Status',
+      label: 'Estado',
       render: (value: string) => (
         <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(value)}`}>
           {getStatusLabel(value)}
@@ -105,7 +105,7 @@ export const MyReportsPage = () => {
     },
     {
       key: 'priority' as const,
-      label: 'Priority',
+      label: 'Prioridad',
       render: (value: string) => {
         const colors: Record<string, string> = {
           LOW: 'text-blue-600',
@@ -122,7 +122,7 @@ export const MyReportsPage = () => {
     },
     {
       key: 'createdAt' as const,
-      label: 'Date',
+      label: 'Fecha de Creación',
       render: (value: string) => new Date(value).toLocaleDateString('en-US'),
     },
   ]
@@ -132,7 +132,7 @@ export const MyReportsPage = () => {
       
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mis Reportes</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mis Denuncias</h1>
           <p className="text-gray-600">Gestiona todos tus reportes y solicitudes de apoyo</p>
         </div>
         <Button
@@ -141,7 +141,7 @@ export const MyReportsPage = () => {
           onClick={() => navigate('/victim/create-report')}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo Reporte
+          Nueva Denuncia
         </Button>
       </div>
 
@@ -149,15 +149,15 @@ export const MyReportsPage = () => {
       <Card title="Search Filters" className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
-            label="Search report"
-            placeholder="Search by title or description..."
+            label="Buscar Denuncia"
+            placeholder="Buscar por título o descripción..."
             value={searchTerm}
             onChange={setSearchTerm}
             className="flex-1"
           />
 
           <Select
-            label="Status"
+            label="Estado"
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
@@ -170,7 +170,7 @@ export const MyReportsPage = () => {
           />
 
           <Select
-            label="Priority"
+            label="Prioridad"
             value={priorityFilter}
             onChange={setPriorityFilter}
             options={[
@@ -199,8 +199,8 @@ export const MyReportsPage = () => {
           <div className="text-center py-8">
             <p className="text-gray-700 mb-4">
               {searchTerm || statusFilter || priorityFilter
-                ? 'No reports match your filters'
-                : 'You have not registered any reports yet'}
+                ? 'No hay denuncias que coincidan con tus filtros'
+                : 'Aún no has registrado ninguna denuncia. ¡Comienza creando una nueva!'}
             </p>
             {!searchTerm && !statusFilter && !priorityFilter && (
               <Button

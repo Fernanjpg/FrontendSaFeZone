@@ -11,8 +11,8 @@ export interface Agenda {
   titulo: string
   fechaInicio: string
   fechaFin: string
-  tipo: string
-  estado: string
+  tipo: AgendaEventType
+  estado: AgendaEventStatus
   descripcion: string
   linkReunion: string | null
   usuarioNombre: string | null

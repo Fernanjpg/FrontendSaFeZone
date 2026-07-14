@@ -220,6 +220,9 @@ export const DefenderCasesPage = () => {
                   <Eye className="w-4 h-4" />
                   Ver Detalles
                 </button>
+                <button onClick={() => navigate('/defender/legal-update', { state: { reportId: report.id } })} className="bg-teal hover:bg-teal/90 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  Actualizar Estado Legal
+                </button>
               </div>
             </div>
           ))
