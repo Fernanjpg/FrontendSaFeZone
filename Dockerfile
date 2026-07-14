@@ -1,4 +1,4 @@
-# --- ETAPA 1: Construcción (Build) ---
+# Fase 1: Construcción
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -6,13 +6,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# --- ETAPA 2: Servidor de Producción (Nginx) ---
+# Fase 2: Servidor Nginx modificado
 FROM nginx:alpine
-# Copia los archivos compilados de la etapa anterior a la carpeta de Nginx
+# Copiamos la configuración de Nginx que cambia el puerto a 8080
+RUN sed -i 's/listen       80;/listen       8080;/g' /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copia la configuración personalizada de Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]veri
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
