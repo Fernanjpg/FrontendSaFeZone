@@ -10,8 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-.env
-.env.*
+*.env
 *.local
 
 # Compiled vite config files
