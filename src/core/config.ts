@@ -1,7 +1,7 @@
 
 
 export const config = {
-  API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  API_URL: import.meta.env.VITE_API_URL || 'https://backendsafezone-202186514803.southamerica-west1.run.app/api',
   USE_MOCK: import.meta.env.VITE_USE_MOCK === 'true',
   MOCK_DELAY: 300,
   DEBUG: import.meta.env.DEV,
